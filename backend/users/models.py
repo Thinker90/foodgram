@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from .validators import validate_username_not_me, validate_username_symbols
-
 
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
