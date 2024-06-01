@@ -26,8 +26,8 @@ class Ingredients(models.Model):
             )
         ]
 
-        def __str__(self) -> str:
-            return f"{self.name} {self.measurement_unit}"
+        def __str__(self):
+            return f"{self.name} - {self.measurement_unit}"
 
 
 class Tags(models.Model):
@@ -35,12 +35,6 @@ class Tags(models.Model):
         verbose_name="Тэг",
         max_length=150,
         unique=True,
-    )
-    color = models.CharField(
-        verbose_name="Цвет",
-        max_length=7,
-        unique=True,
-        db_index=False,
     )
     slug = models.CharField(
         verbose_name="Слаг тэга",
@@ -54,8 +48,8 @@ class Tags(models.Model):
         verbose_name_plural = "Тэги"
         ordering = ("name",)
 
-    def __str__(self) -> str:
-        return f"{self.name} (цвет: {self.color})"
+    def __str__(self):
+        return self.name
 
 
 class Recipes(models.Model):
@@ -119,7 +113,7 @@ class Recipes(models.Model):
             ),
         ]
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.name}. Автор: {self.author.username}"
 
 

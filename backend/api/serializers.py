@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from recipes.models import (Recipes,
-                              Carts,
-                              Ingredients,
-                              Tags,
-                              AmountIngredient)
+                            Carts,
+                            Ingredients,
+                            Tags,
+                            AmountIngredient)
 
 User = get_user_model()
 
@@ -21,8 +22,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class UserProfileSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
-
+    avatar = Base64ImageField()
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
@@ -31,8 +31,42 @@ class UserProfileSerializer(UserSerializer):
             'password': {'write_only': True, 'required': True},
         }
 
-    def get_is_subscribed(self, obj):
-        if obj.following.exists():
-            return obj.following.values_list('id', flat=True)
-        else:
-            return False
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tags
+        fields = ('id', 'name', 'slug')
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredients
+        fields = '__all__'
+
+
+class IngredientAmountSerializer(serializers.ModelSerializer):
+    pass
+
+
+class RecipesSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+    author = UserSerializer(read_only=True)
+    ingredients = IngredientSerializer(many=True, read_only=True)
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipes
+        fields = (
+            "id",
+            "tags",
+            "author",
+            "ingredients",
+            "name",
+            "image",
+            "text",
+            "cooking_time",
+        )
+        read_only_fields = (
+            # -
+        )
+
