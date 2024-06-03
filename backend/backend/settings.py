@@ -3,6 +3,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import djoser.permissions
 import rest_framework.authentication
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -131,7 +132,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5,
 
 }
@@ -144,8 +145,8 @@ DJOSER = {
     },
 
     'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.AllowAny'],
     },
     'HIDE_USERS': False,
 }

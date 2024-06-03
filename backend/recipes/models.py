@@ -144,6 +144,14 @@ class AmountIngredient(models.Model):
             ),
         ),
     )
+    class Meta:
+        verbose_name = 'Кол-во ингридиентов'
+        verbose_name_plural = 'Кол-во ингридиентов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredients'],
+                name='unique ingredients for recipe')
+        ]
 
 
 class Favorites(models.Model):
