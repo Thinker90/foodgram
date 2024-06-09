@@ -4,7 +4,7 @@ from pathlib import Path
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from recipes.models import Ingredients
+from recipes.models import Ingredients, Tags
 
 User = get_user_model()
 
@@ -26,6 +26,18 @@ class Command(BaseCommand):
                                      measurement_unit=row['measurement_unit'])
             ingridient.save()
             i += 1
-        self.stdout.write(self.style.SUCCESS('ingredients выполнен успешно'))
+        self.stdout.write(self.style.SUCCESS(
+            f'ingredients выполнен успешно, загружено {i} элементов'))
+
+        i = 0
+        for row in DictReader(open(Path(csv_directory) / 'tags.csv',
+                                   encoding='utf-8')):
+            tag = Tags(id=i,
+                       name=row['name'],
+                       slug=row['slug'])
+            tag.save()
+            i += 1
+        self.stdout.write(self.style.SUCCESS(
+            f'tags выполнен успешно, загружено {i} элементов'))
 
         self.stdout.write(self.style.SUCCESS('Импорт данных выполнен!'))

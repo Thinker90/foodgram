@@ -58,22 +58,22 @@ class Recipes(models.Model):
         max_length=150,
     )
     author = models.ForeignKey(
+        User,
         verbose_name="Автор рецепта",
         related_name="recipes",
-        to=User,
         on_delete=models.SET_NULL,
         null=True,
     )
     tags = models.ManyToManyField(
+        Tags,
         verbose_name="Тег",
         related_name="recipes",
-        to=Tags,
     )
     ingredients = models.ManyToManyField(
+        Ingredients,
         verbose_name="Ингредиенты блюда",
         related_name="recipes",
-        to=Ingredients,
-        through="recipes.AmountIngredient",
+        through="AmountIngredient",
     )
     pub_date = models.DateTimeField(
         verbose_name="Дата публикации",
@@ -89,14 +89,13 @@ class Recipes(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Время приготовления",
-        default=0,
         validators=(
             MinValueValidator(
                 1,
                 "Ваше блюдо уже готово!",
             ),
             MaxValueValidator(
-                24,
+                200,
                 "Очень долго ждать...",
             ),
         ),
@@ -119,38 +118,27 @@ class Recipes(models.Model):
 
 class AmountIngredient(models.Model):
     recipe = models.ForeignKey(
+        Recipes,
         verbose_name="В каких рецептах",
         related_name="ingredient",
-        to=Recipes,
         on_delete=models.CASCADE,
     )
-    ingredients = models.ForeignKey(
+    ingredient = models.ForeignKey(
+        Ingredients,
         verbose_name="Связанные ингредиенты",
-        related_name="recipe",
-        to=Ingredients,
+        related_name="ingredient_recipes",
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name="Количество",
-        default=0,
-        validators=(
-            MinValueValidator(
-                1,
-                "Колчество ингридиента не может быть меньше 1",
-            ),
-            MaxValueValidator(
-                20,
-                "Вы уверены что необходимо такое колиество ингридиента?",
-            ),
-        ),
+        validators=[MinValueValidator(1, 'Количество ингридиентов не может быть меньше 1')]
     )
     class Meta:
         verbose_name = 'Кол-во ингридиентов'
         verbose_name_plural = 'Кол-во ингридиентов'
         constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'ingredients'],
-                name='unique ingredients for recipe')
+            models.UniqueConstraint(fields=['ingredient', 'recipe'],
+                                    name='unique ingredients recipe')
         ]
 
 
