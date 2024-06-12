@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['с']
+    REQUIRED_FIELDS = []
 
     first_name = models.CharField(
         verbose_name='Имя',

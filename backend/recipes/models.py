@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -131,8 +132,10 @@ class AmountIngredient(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name="Количество",
-        validators=[MinValueValidator(1, 'Количество ингридиентов не может быть меньше 1')]
+        validators=[MinValueValidator(1,
+                                      'Количество ингридиентов не может быть меньше 1')]
     )
+
     class Meta:
         verbose_name = 'Кол-во ингридиентов'
         verbose_name_plural = 'Кол-во ингридиентов'

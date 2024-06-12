@@ -1,78 +1,35 @@
 from django.contrib.auth import get_user_model
-import django_filters
 
 from urllib.parse import urljoin
 
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
-    IsAuthenticated, BasePermission
+    IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 
 from djoser.views import UserViewSet
 
-# еще тут должны быть фильтры/пермишны/пагинация?
-from .serializers import (TagSerializer,
-                          IngredientSerializer,
-                          CreateRecipesSerializer,
-                          RecipeSerializer,
-                          UserProfileSerializer, SubscribeSerializer,
-                          RecipeInCartSerializer, RecipeInFavoriteerializer,
-                          UserInSubscribeSerializer,
 
+from .filters import RecipeFilter, IngredientFilter
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (TagSerializer, IngredientSerializer,
+                          CreateRecipesSerializer,
+                          RecipeSerializer, RecipeInCartSerializer,
+                          RecipeInFavoriteerializer, UserInSubscribeSerializer,
                           )
-from recipes.models import (Recipes,
-                            Carts,
-                            Ingredients,
-                            Tags,
-                            AmountIngredient,
-                            Favorite)
+from recipes.models import (Recipes, Carts, Ingredients, Tags,
+                            AmountIngredient, Favorite)
 
 from users.models import Subscribes
 
+
+
 User = get_user_model()
-
-
-# фиильтрацию надо вынести в отдельный файл
-class IngredientFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name='name',
-                                     lookup_expr='istartswith')
-
-    class Meta:
-        model = Ingredients
-        fields = ['name']
-
-class RecipeFilter(FilterSet):
-    author = filters.NumberFilter(field_name="author__id")
-    tags = filters.AllValuesMultipleFilter(field_name="tags__slug")
-    is_favorited = filters.BooleanFilter(method='filter_is_favorited')
-    is_in_shopping_cart = filters.BooleanFilter(
-        method='filter_is_in_shopping_cart')
-
-    class Meta:
-        model = Recipes
-        fields = ['author', 'tags']
-
-    def filter_is_favorited(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
-            return queryset.filter(favorites__user=self.request.user)
-        return queryset
-
-    def filter_is_in_shopping_cart(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
-            return queryset.filter(cart__user=self.request.user)
-        print("User is anonymous or filter is not applied for favorites")
-        return queryset
-
-class IsAuthorOrReadOnly(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return obj.author == request.user
 
 
 class SubscriptionsManager:
@@ -149,7 +106,8 @@ class CustomUserViewSet(UserViewSet, SubscriptionsManager):
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, *args, **kwargs):
         data = {'user': request.user.id, 'author': self.get_object().id}
-        return self.add_subscribe(UserInSubscribeSerializer(data=data, context={'request': request}))
+        return self.add_subscribe(
+            UserInSubscribeSerializer(data=data, context={'request': request}))
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, id=None):
@@ -196,11 +154,6 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManager):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-
     @action(detail=True,
             methods=['POST'],
             permission_classes=[IsAuthenticated])
@@ -241,7 +194,6 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManager):
                 ingredients_list.append(
                     f" - {ingredient.name}: {amount_ingredient.amount} {ingredient.measurement_unit}")
         return Response(ingredients_list)
-
 
     @action(detail=True,
             methods=['POST'],

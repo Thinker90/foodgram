@@ -58,14 +58,13 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-
 class ShortRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipes
         fields = (
             'id', 'image', 'name', 'cooking_time'
         )
+
 
 class RecipeInFavoriteerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,6 +75,7 @@ class RecipeInFavoriteerializer(serializers.ModelSerializer):
         recipe = ShortRecipeSerializer(instance.recipe,
                                        context=self.context).data
         return recipe
+
 
 class RecipeInCartSerializer(serializers.ModelSerializer):
     class Meta:
