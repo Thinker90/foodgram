@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from rest_framework.exceptions import ValidationError
 
 
 class User(AbstractUser):
@@ -64,3 +65,11 @@ class Subscribes(models.Model):
                 name='unique follow',
             )
         ]
+
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError('Вы не можете подписываться на самого себя')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
