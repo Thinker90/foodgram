@@ -192,6 +192,7 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManager):
                     f" - {ingredient.name}: {amount_ingredient.amount} {ingredient.measurement_unit}")
         return Response(ingredients_list)
 
+
     @action(detail=True,
             methods=['POST'],
             permission_classes=[IsAuthenticated])
