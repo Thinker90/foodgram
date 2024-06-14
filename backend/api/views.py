@@ -3,18 +3,20 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAuthenticated)
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework import status
 
 from djoser.views import UserViewSet
 
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
+                                        IsAuthenticated)
+
 from .filters import RecipeFilter, IngredientFilter
+from .mixins import SubscriptionsManagerMixin
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (TagSerializer, IngredientSerializer,
                           CreateRecipesSerializer,
@@ -29,26 +31,6 @@ from users.models import Subscribes
 User = get_user_model()
 
 
-class SubscriptionsManager:
-    def add_subscribe(self, serializer):
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete_subscribe(self, model, filter_set, message: dict):
-        subscription = model.objects.filter(**filter_set).first()
-        if subscription:
-            subscription.delete()
-            return Response({'success': message['success']},
-                            status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(
-                {'message': message['error']},
-                status=status.HTTP_400_BAD_REQUEST)
-
-
-# ------------------------------------------------------
-# ------------------check and complete-----------------
 class IngredientsViewSet(ReadOnlyModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
@@ -64,7 +46,7 @@ class TagsViewSet(ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class CustomUserViewSet(UserViewSet, SubscriptionsManager):
+class CustomUserViewSet(UserViewSet, SubscriptionsManagerMixin):
     pagination_class = LimitOffsetPagination
 
     @action(detail=False,
@@ -130,7 +112,7 @@ class CustomUserViewSet(UserViewSet, SubscriptionsManager):
 
 # ------------------------------------------------------
 
-class RecipeViewSet(ModelViewSet, SubscriptionsManager):
+class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
     queryset = Recipes.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, ]
     filter_backends = (DjangoFilterBackend,)
@@ -189,9 +171,10 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManager):
             for amount_ingredient in amount_ingredients:
                 ingredient = amount_ingredient.ingredient
                 ingredients_list.append(
-                    f" - {ingredient.name}: {amount_ingredient.amount} {ingredient.measurement_unit}")
+                    f" - {ingredient.name}: "
+                    f"{amount_ingredient.amount} "
+                    f"{ingredient.measurement_unit}")
         return Response(ingredients_list)
-
 
     @action(detail=True,
             methods=['POST'],
@@ -220,5 +203,5 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManager):
         recipe_id = kwargs.get('pk')
         domain = request.get_host()
         short_id = hash(recipe_id) % 1000
-        short_link = urljoin(f"https://{domain}/s/", str(short_id))
+        short_link = urljoin(f"http://{domain}/s/", str(short_id))
         return Response({'short-link': short_link}, status=status.HTTP_200_OK)

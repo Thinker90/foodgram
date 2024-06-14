@@ -215,7 +215,7 @@ class CreateRecipesSerializer(serializers.ModelSerializer):
 
         for ingredient in ingredients:
             amount = ingredient.get('amount')
-            if amount is None or amount < 1:
+            if amount is None or int(amount) < 1:
                 raise ValidationError(
                     'Количество ингридиентов не может быть меньше 1')
 

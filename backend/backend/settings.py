@@ -1,7 +1,7 @@
 # flake8: noqa
 import os
-from datetime import timedelta
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
 import djoser.permissions
 import rest_framework.authentication
@@ -13,12 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-p*hm@!ro3-ob*-#knfy#&1ib!4jir()_+nd4cde$h4&^y%fy%7'
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() != 'false'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('HOSTS', default='127.0.0.1 localhost').split()
 
 # Application definition
 
@@ -72,12 +71,27 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+DATABASES_POSTGRESQL = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
+    }
+}
+
+DATABASES_SQLITE = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+if os.getenv('TEST_DB', 'True').lower() != 'true':
+    DATABASES = DATABASES_POSTGRESQL
+else:
+    DATABASES = DATABASES_SQLITE
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
