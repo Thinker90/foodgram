@@ -1,5 +1,3 @@
-from urllib import request
-
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
@@ -98,13 +96,13 @@ class UserInSubscribeSerializer(serializers.ModelSerializer):
         recipes_limit = request.query_params.get('recipes_limit')
         recipes = instance.author.recipes.all()
         if recipes_limit:
-            recipes = recipes[:int(recipes_limit)]
+            recipes_limit = recipes[:int(recipes_limit)]
 
         user_data = UserProfileSerializer(instance.author,
                                           context=self.context).data
 
         user_data['recipes'] = ShortRecipeSerializer(
-            recipes, many=True,
+            recipes_limit, many=True,
             context=self.context).data
         user_data['recipes_count'] = len(user_data['recipes'])
         return user_data
@@ -203,10 +201,10 @@ class CreateRecipesSerializer(serializers.ModelSerializer):
 
         ingredients = data.get('ingredients')
         ingredients_id = [ingredient['id'] for ingredient in ingredients]
-        existing_ingredient_ids = list(Ingredients.objects.filter(
-            id__in=ingredients_id
-        ).values_list('id', flat=True)
-                                       )
+        existing_ingredient_ids = list(
+            Ingredients.objects.filter(
+                id__in=ingredients_id
+            ).values_list('id', flat=True))
         missing_ingredient_ids = set(ingredients_id) - set(
             existing_ingredient_ids)
         if missing_ingredient_ids:

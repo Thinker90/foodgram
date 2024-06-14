@@ -166,7 +166,7 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
         for cart_item in shopping_cart:
             recipe = cart_item.recipe
             ingredients_list.append(f'>>>>>>>{recipe.name}<<<<<<<')
-            ingredients_list.append(f'Ингридиенты: ')
+            ingredients_list.append('Ингридиенты: ')
             amount_ingredients = AmountIngredient.objects.filter(recipe=recipe)
             for amount_ingredient in amount_ingredients:
                 ingredient = amount_ingredient.ingredient
