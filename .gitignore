@@ -141,3 +141,5 @@ dmypy.json
 static/
 media/
 /backend/templates/
+/backend/collected_static/
+/backend/sent_mails/
