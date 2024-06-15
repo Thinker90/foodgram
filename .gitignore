@@ -143,3 +143,5 @@ media/
 /backend/templates/
 /backend/collected_static/
 /backend/sent_mails/
+/infra/docs/
+/infra/frontend/

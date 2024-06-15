@@ -1,20 +1,18 @@
 from django.contrib.auth import get_user_model
-
-from urllib.parse import urljoin
-
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
 from djoser.views import UserViewSet
 
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
                                         IsAuthenticated)
+
+from urllib.parse import urljoin
 
 from .filters import RecipeFilter, IngredientFilter
 from .mixins import SubscriptionsManagerMixin
@@ -109,8 +107,6 @@ class CustomUserViewSet(UserViewSet, SubscriptionsManagerMixin):
         return paginator.get_paginated_response(serializer.data)
 
 
-# ------------------------------------------------------
-
 class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, ]
@@ -119,7 +115,6 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
 
     def check_item(self, model, id):
         return model.objects.filter(id=id).exists()
-
 
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update'):
