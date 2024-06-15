@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import FilterSet, filters
 
-from recipes.models import (Recipes, Ingredients)
+from recipes.models import (Recipe, Ingredient)
 
 User = get_user_model()
 
@@ -11,7 +11,7 @@ class IngredientFilter(FilterSet):
                               lookup_expr='istartswith')
 
     class Meta:
-        model = Ingredients
+        model = Ingredient
         fields = ['name']
 
 
@@ -23,7 +23,7 @@ class RecipeFilter(FilterSet):
         method='filter_is_in_shopping_cart')
 
     class Meta:
-        model = Recipes
+        model = Recipe
         fields = ['author', 'tags']
 
     def filter_is_favorited(self, queryset, name, value):

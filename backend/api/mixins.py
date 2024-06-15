@@ -14,7 +14,6 @@ class SubscriptionsManagerMixin:
             subscription.delete()
             return Response({'success': message['success']},
                             status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(
-                {'message': message['error']},
-                status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'message': message['error']},
+            status=status.HTTP_400_BAD_REQUEST)

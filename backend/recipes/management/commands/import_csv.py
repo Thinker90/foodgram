@@ -4,7 +4,7 @@ from pathlib import Path
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from recipes.models import Ingredients, Tags
+from recipes.models import Ingredient, Tag
 
 User = get_user_model()
 
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         i = 0
         for row in DictReader(open(Path(csv_directory) / 'ingredients.csv',
                                    encoding='utf-8')):
-            ingridient = Ingredients(id=i,
+            ingridient = Ingredient(id=i,
                                      name=row['name'],
                                      measurement_unit=row['measurement_unit'])
             ingridient.save()
@@ -32,7 +32,7 @@ class Command(BaseCommand):
         i = 0
         for row in DictReader(open(Path(csv_directory) / 'tags.csv',
                                    encoding='utf-8')):
-            tag = Tags(id=i,
+            tag = Tag(id=i,
                        name=row['name'],
                        slug=row['slug'])
             tag.save()
