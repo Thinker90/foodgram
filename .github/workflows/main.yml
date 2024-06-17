@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Create projects directory
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.11
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
@@ -24,7 +24,7 @@ jobs:
             mkdir -p docs
 
       - name: Copy infra files
-        uses: appleboy/ssh-action@master
+        uses: appleboy/scp-action@v0.1.11
         with:
           source: "infra/"
           target: "/${{ secrets.USERNAME }}/foodgram/"
@@ -34,7 +34,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: Copy docs
-        uses: appleboy/ssh-action@master
+        uses: appleboy/scp-action@v0.1.11
         with:
           source: "../docs/"
           target: "/${{ secrets.USER }}/foodgram/docs/"
@@ -156,7 +156,7 @@ jobs:
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py import_csv data/
-            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/backend_static/. /backend_static/static/
+            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/backend_static/. /static/
 
   send_message:
     name: Send Telegram Message
