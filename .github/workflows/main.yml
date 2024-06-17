@@ -24,7 +24,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: infra/
-          remote: /home/${{ secrets.USERNAME }}/foodgram/
+          remote: /home/${{ secrets.USER }}/foodgram/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           privateKey: ${{ secrets.SSH_KEY }}
@@ -33,7 +33,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: docs
-          remote: /home/${{ secrets.USERNAME }}/foodgram/docs/
+          remote: /home/${{ secrets.USER }}/foodgram/docs/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           privateKey: ${{ secrets.SSH_KEY }}
