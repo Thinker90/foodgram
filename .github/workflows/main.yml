@@ -13,33 +13,35 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create projects directory
-        uses: garygrossgarten/github-action-ssh@release
+        uses: pierrickdelrieu/scp-action@v0.1.0
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          command: cd foodgram && mkdir -p docs
+          ssh_username: ${{ secrets.USER }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source_dir: ${{ secrets.SOURCE_FOLDER }}
+          destination_dir: ${{ secrets.DESTINATION_FOLDER }}
+        command: cd foodgram && mkdir -p docs
 
       - name: Copy infra files
-        uses: garygrossgarten/github-action-scp@release
+        uses: pierrickdelrieu/scp-action@v0.1.0
         with:
-          local: infra/
-          remote: /home/${{ secrets.USER }}/foodgram/
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          ssh_username: ${{ secrets.USER }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source_dir: infra/
+          destination_dir: /home/${{ secrets.USER }}/foodgram/
 
       - name: Copy docs
-        uses: garygrossgarten/github-action-scp@release
+        uses: pierrickdelrieu/scp-action@v0.1.0
         with:
-          local: docs
-          remote: /home/${{ secrets.USER }}/foodgram/docs/
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          ssh_username: ${{ secrets.USER }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source_dir: docs/
+          destination_dir: /home/${{ secrets.USER }}/foodgram/docs/
 
   tests:
     runs-on: ubuntu-latest
