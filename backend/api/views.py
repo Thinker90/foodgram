@@ -199,5 +199,5 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
         recipe_id = kwargs.get('pk')
         domain = request.get_host()
         short_id = hash(recipe_id) % 1000
-        short_link = urljoin(f"http://{domain}/s/", str(short_id))
+        short_link = urljoin(f"https://{domain}/s/", str(short_id))
         return Response({'short-link': short_link}, status=status.HTTP_200_OK)
