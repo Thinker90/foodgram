@@ -19,13 +19,15 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          command: cd foodgram && mkdir -p foodgram/docs
+          script: |
+            cd foodgram
+            mkdir -p foodgram/docs
 
       - name: Copy infra files
         uses: appleboy/ssh-action@master
         with:
-          local: infra/
-          remote: /${{ secrets.USERNAME }}/foodgram/
+          source: infra/
+          target: /${{ secrets.USERNAME }}/foodgram/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
@@ -34,8 +36,8 @@ jobs:
       - name: Copy docs
         uses: appleboy/ssh-action@master
         with:
-          local: docs
-          remote: /${{ secrets.USER }}/foodgram/docs/
+          source: docs
+          target: /${{ secrets.USER }}/foodgram/docs/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
