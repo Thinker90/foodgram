@@ -10,7 +10,7 @@ jobs:
     name: Copy infra and docs
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create projects directory
         uses: appleboy/ssh-action@master
