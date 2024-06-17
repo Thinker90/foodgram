@@ -10,7 +10,7 @@ jobs:
     name: Copy infra and docs
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Create projects directory
         uses: appleboy/ssh-action@master
@@ -27,7 +27,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           source: "infra"
-          target: "/${{ secrets.USERNAME }}/foodgram/"
+          target: "/home/${{ secrets.USERNAME }}/foodgram/"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
@@ -36,8 +36,8 @@ jobs:
       - name: Copy docs
         uses: appleboy/ssh-action@master
         with:
-          source: "../docs"
-          target: "/${{ secrets.USER }}/foodgram/docs/"
+          source: "docs"
+          target: "/home/${{ secrets.USER }}/foodgram/docs/"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
