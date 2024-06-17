@@ -22,8 +22,8 @@ class Command(BaseCommand):
         for row in DictReader(open(Path(csv_directory) / 'ingredients.csv',
                                    encoding='utf-8')):
             ingridient = Ingredient(id=i,
-                                     name=row['name'],
-                                     measurement_unit=row['measurement_unit'])
+                                    name=row['name'],
+                                    measurement_unit=row['measurement_unit'])
             ingridient.save()
             i += 1
         self.stdout.write(self.style.SUCCESS(
@@ -33,8 +33,8 @@ class Command(BaseCommand):
         for row in DictReader(open(Path(csv_directory) / 'tags.csv',
                                    encoding='utf-8')):
             tag = Tag(id=i,
-                       name=row['name'],
-                       slug=row['slug'])
+                      name=row['name'],
+                      slug=row['slug'])
             tag.save()
             i += 1
         self.stdout.write(self.style.SUCCESS(

@@ -170,7 +170,6 @@ class CreateRecipesSerializer(serializers.ModelSerializer):
         ]
         AmountIngredient.objects.bulk_create(ingredient_objects)
 
-
     def validate_image(self, data):
         if not data:
             raise ValidationError('Необходимо загрузить изображение.')
