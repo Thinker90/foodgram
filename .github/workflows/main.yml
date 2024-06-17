@@ -26,7 +26,7 @@ jobs:
       - name: Copy infra files
         uses: appleboy/ssh-action@master
         with:
-          source: "infra/"
+          source: "infra"
           target: "/${{ secrets.USERNAME }}/foodgram/"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
@@ -36,7 +36,7 @@ jobs:
       - name: Copy docs
         uses: appleboy/ssh-action@master
         with:
-          source: "../docs/"
+          source: "../docs"
           target: "/${{ secrets.USER }}/foodgram/docs/"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
