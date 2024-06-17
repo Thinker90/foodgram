@@ -163,4 +163,4 @@ jobs:
           ${{ github.actor }}
           ${{ github.event.commits[0].message }}
           https://github.com/${{ github.repository }}/commit/${{github.sha}}          
-          ypcursetwo.gkk-satka.ru
+          ypcurseone.gkk-satka.ru
