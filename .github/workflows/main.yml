@@ -12,7 +12,7 @@ jobs:
     steps:
 
       - name: Copy infra files
-        uses: pierrickdelrieu/scp-action@v0.1.0
+        uses: pierrickdelrieu/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           ssh_username: ${{ secrets.USER }}
@@ -22,7 +22,7 @@ jobs:
           destination_dir: /home/${{ secrets.USER }}/foodgram/
 
       - name: Copy docs
-        uses: pierrickdelrieu/scp-action@v0.1.0
+        uses: pierrickdelrieu/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           ssh_username: ${{ secrets.USER }}
