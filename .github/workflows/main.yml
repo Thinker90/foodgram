@@ -17,7 +17,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          privateKey: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           command: cd foodgram && mkdir -p docs
 
@@ -28,7 +28,7 @@ jobs:
           remote: /home/${{ secrets.USERNAME }}/foodgram/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          privateKey: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}}
 
       - name: Copy docs
@@ -38,7 +38,7 @@ jobs:
           remote: /home/${{ secrets.USERNAME }}/foodgram/docs/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          privateKey: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
   tests:
