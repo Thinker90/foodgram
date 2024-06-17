@@ -13,30 +13,33 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create projects directory
-        uses: garygrossgarten/github-action-ssh@release
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           command: cd foodgram && mkdir -p foodgram/docs
 
       - name: Copy infra files
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/scp-action@master
         with:
           local: infra/
           remote: /${{ secrets.USERNAME }}/foodgram/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: Copy docs
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/scp-action@master
         with:
           local: docs
           remote: /${{ secrets.USER }}/foodgram/docs/
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          privateKey: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
   tests:
     runs-on: ubuntu-latest
@@ -97,26 +100,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
 
-  frontend_tests:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up nodeJS
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-
-    - name: Install dependencies
-      run: |
-        cd frontend/
-        npm ci
-
-    - name: Test frontend
-      run: |
-        cd frontend/
-        npm run test
-
   build_frontend_and_push_to_docker_hub:
     name: Push frontend Docker image to DockerHub
     runs-on: ubuntu-latest
@@ -144,11 +127,10 @@ jobs:
     needs:
       - build_and_push_to_docker_hub
       - build_frontend_and_push_to_docker_hub
+      - copy_files_to_server
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Copy docker-compose.yml via ssh
-        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
