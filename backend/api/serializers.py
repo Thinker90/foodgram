@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
 
-from djoser.serializers import UserCreateSerializer, UserSerializer
-
 from drf_extra_fields.fields import Base64ImageField
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from djoser.serializers import UserCreateSerializer, UserSerializer
 
 from users.models import Subscribe
 from recipes.models import (Recipe, Cart, Ingredient, Tag,
@@ -26,6 +26,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 class UserProfileSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
+    avatar = Base64ImageField()
 
     class Meta:
         model = User
@@ -40,6 +41,11 @@ class UserProfileSerializer(UserSerializer):
         if user.is_authenticated:
             return Subscribe.objects.filter(user=user, author=obj).exists()
         return False
+
+    def validate_avatar(self, data):
+        if not data:
+            raise ValidationError('Необходимо загрузить изображение.')
+        return data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -231,7 +237,6 @@ class CreateRecipesSerializer(serializers.ModelSerializer):
         AmountIngredient.objects.filter(recipe=updated_instance).delete()
 
         self.create_ingredients(updated_instance, ingredients_data)
-        updated_instance.save()
         return instance
 
     def to_representation(self, instance):
