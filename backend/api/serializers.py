@@ -183,7 +183,7 @@ class CreateRecipesSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if 'ingredients' not in data:
-            raise ValidationError('Вы не указали ингредиенты.')
+            raise ValidationError('Вы не указали ингредиенты')
 
         if 'tags' not in data:
             raise ValidationError('Вы не указали тэги')
