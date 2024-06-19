@@ -1,6 +1,8 @@
+import base64
 from urllib.parse import urljoin
 
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -56,14 +58,19 @@ class CustomUserViewSet(UserViewSet, SubscriptionsManagerMixin):
             permission_classes=[IsAuthenticated, ])
     def avatar(self, request, *args, **kwargs):
         user = request.user
-        avatar_file = request.data.get('avatar')
+        avatar_base64 = request.data.get('avatar')
 
-        if avatar_file:
-            user.avatar = avatar_file
-            user.save()
-            return Response(request.data, status=status.HTTP_200_OK)
-        return Response({"Вы не загрузили аватар!"},
-                        status=status.HTTP_400_BAD_REQUEST)
+        if not avatar_base64:
+            return Response({"Вы не загрузили аватар!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        format, imgstr = avatar_base64.split(';base64,')
+        ext = format.split('/')[-1]
+        img_data = base64.b64decode(imgstr)
+
+        user.avatar.save(f'avatar.{ext}', ContentFile(img_data), save=True)
+        avatar_url = request.build_absolute_uri(user.avatar.url)
+
+        return Response({"avatar": avatar_url}, status=status.HTTP_200_OK)
 
     @avatar.mapping.delete
     def delete_avatar(self, request, *args, **kwargs):
