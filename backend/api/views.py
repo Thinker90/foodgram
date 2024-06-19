@@ -1,31 +1,27 @@
+from urllib.parse import urljoin
+
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
-
 from djoser.views import UserViewSet
-
 from rest_framework import status
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAuthenticated)
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from urllib.parse import urljoin
-
-from .filters import RecipeFilter, IngredientFilter
+from recipes.models import (AmountIngredient, Cart, Favorite, Ingredient,
+                            Recipe, Tag)
+from users.models import Subscribe
+from .filters import IngredientFilter, RecipeFilter
 from .mixins import SubscriptionsManagerMixin
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (TagSerializer, IngredientSerializer,
-                          CreateRecipesSerializer,
-                          RecipeSerializer, RecipeInCartSerializer,
-                          RecipeInFavoriteerializer, UserInSubscribeSerializer,
-                          )
-from recipes.models import (Recipe, Cart, Ingredient, Tag,
-                            AmountIngredient, Favorite)
-
-from users.models import Subscribe
+from .serializers import (CreateRecipesSerializer, IngredientSerializer,
+                          RecipeInCartSerializer, RecipeInFavoriteerializer,
+                          RecipeSerializer, TagSerializer,
+                          UserInSubscribeSerializer)
 
 User = get_user_model()
 
