@@ -14,6 +14,9 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from django.shortcuts import get_object_or_404, redirect
+
+
 from recipes.models import (AmountIngredient, Cart, Favorite, Ingredient,
                             Recipe, Tag)
 from users.models import Subscribe
@@ -26,6 +29,10 @@ from .serializers import (CreateRecipesSerializer, IngredientSerializer,
                           UserInSubscribeSerializer)
 
 User = get_user_model()
+
+def redirect_short_link(request, short_id):
+    recipe = get_object_or_404(Recipe, short_id=short_id)
+    return redirect(f'/recipes/{recipe.id}')
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
@@ -201,6 +208,12 @@ class RecipeViewSet(ModelViewSet, SubscriptionsManagerMixin):
     def get_link(self, request, *args, **kwargs):
         recipe_id = kwargs.get('pk')
         domain = request.get_host()
-        short_id = hash(recipe_id) % 1000
-        short_link = urljoin(f"https://{domain}/s/", str(short_id))
+
+        recipe = Recipe.objects.get(id=recipe_id)
+
+        recipe.short_id = abs(hash(recipe_id)) % 100000
+        recipe.save()
+
+        short_link = urljoin(f"https://{domain}/s/", str(recipe.short_id))
+
         return Response({'short-link': short_link}, status=status.HTTP_200_OK)

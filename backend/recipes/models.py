@@ -100,6 +100,11 @@ class Recipe(models.Model):
             ),
         ),
     )
+    short_id = models.IntegerField(
+        verbose_name="Короткая ссылка",
+        unique=True,
+        null=True,
+        blank=True)
 
     class Meta:
         verbose_name = "Рецепт"
@@ -111,6 +116,9 @@ class Recipe(models.Model):
                 name="unique_for_author",
             ),
         ]
+
+    def get_recipe_by_short_id(cls, short_id):
+        return cls.objects.get(short_id=short_id)
 
     def __str__(self):
         return f"{self.name}. Автор: {self.author.username}"
