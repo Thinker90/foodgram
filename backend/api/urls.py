@@ -15,5 +15,5 @@ router.register('users', CustomUserViewSet, 'users')
 urlpatterns = (
     path('', include(router.urls)),
     path('auth/', include('djoser.urls.authtoken')),
-    path('s/<int:short_id>/', redirect_short_link, name='redirect_short_link')
+    path('s/<str:short_link>/', redirect_short_link, name='recipe-shortlink'),
 )
