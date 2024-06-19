@@ -16,7 +16,6 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from django.shortcuts import get_object_or_404, redirect
 
-
 from recipes.models import (AmountIngredient, Cart, Favorite, Ingredient,
                             Recipe, Tag)
 from users.models import Subscribe
@@ -29,6 +28,7 @@ from .serializers import (CreateRecipesSerializer, IngredientSerializer,
                           UserInSubscribeSerializer)
 
 User = get_user_model()
+
 
 def redirect_short_link(request, short_id):
     recipe = get_object_or_404(Recipe, short_id=short_id)
